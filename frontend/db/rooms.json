@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "PlayStation Room 1",
+    "type": "PlayStation",
+    "price_per_hour": 15,
+    "status": "occupied",
+    "current_reservation_id": 6
+  },
+  {
+    "id": 2,
+    "name": "Billiard Room 1",
+    "type": "Billiard",
+    "price_per_hour": 20,
+    "status": "vacant",
+    "current_reservation_id": null
+  },
+  {
+    "id": 3,
+    "name": "Ping Pong Room 1",
+    "type": "Ping Pong",
+    "price_per_hour": 10,
+    "status": "occupied",
+    "current_reservation_id": 7
+  },
+  {
+    "id": 4,
+    "name": "PlayStation Room 2",
+    "type": "PlayStation",
+    "price_per_hour": 15,
+    "status": "vacant",
+    "current_reservation_id": null
+  },
+  {
+    "id": 5,
+    "name": "Billiard Room 2",
+    "type": "Billiard",
+    "price_per_hour": 20,
+    "status": "vacant",
+    "current_reservation_id": null
+  }
+]

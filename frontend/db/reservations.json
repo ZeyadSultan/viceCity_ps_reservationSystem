@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "room_id": 1,
+    "customer_name": "John Doe",
+    "start_time": "2024-06-25T14:00:00",
+    "end_time": "2024-06-25T16:00:00",
+    "total_cost": 30
+  },
+  {
+    "id": 2,
+    "room_id": 3,
+    "customer_name": "Jane Smith",
+    "start_time": "2024-06-25T15:00:00",
+    "end_time": "2024-06-25T17:00:00",
+    "total_cost": 20
+  },
+  {
+    "id": 3,
+    "room_id": 2,
+    "customer_name": "Michael Brown",
+    "start_time": "2024-06-25T16:00:00",
+    "end_time": "2024-06-25T18:00:00",
+    "total_cost": 40
+  },
+  {
+    "id": 4,
+    "room_id": 4,
+    "customer_name": "Emily Davis",
+    "start_time": "2024-06-25T10:00:00",
+    "end_time": "2024-06-25T12:00:00",
+    "total_cost": 30
+  },
+  {
+    "id": 5,
+    "room_id": 5,
+    "customer_name": "Chris Wilson",
+    "start_time": "2024-06-25T09:00:00",
+    "end_time": "2024-06-25T11:00:00",
+    "total_cost": 40
+  },
+  {
+    "id": 6,
+    "room_id": 1,
+    "customer_name": "Alice Johnson",
+    "start_time": "2024-06-25T10:00:00",
+    "end_time": null,
+    "total_cost": null
+  },
+  {
+    "id": 7,
+    "room_id": 3,
+    "customer_name": "Bob Lee",
+    "start_time": "2024-06-25T11:00:00",
+    "end_time": null,
+    "total_cost": null
+  }
+]
