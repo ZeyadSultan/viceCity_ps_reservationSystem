@@ -2,7 +2,7 @@ import { Room } from "@/schemas";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
-async function getData(): Promise<Room[]> {
+export async function getData(): Promise<Room[]> {
   // Fetch data from your API here.
   return [
     {
@@ -25,7 +25,7 @@ async function getData(): Promise<Room[]> {
       type: "pool",
       price_per_hour: 20,
       // status: "vacant",
-      current_reservation: null,
+      current_reservation: undefined,
     },
     {
       id: 3,
@@ -47,7 +47,7 @@ async function getData(): Promise<Room[]> {
       type: "playstaion",
       price_per_hour: 15,
       // status: "vacant",
-      current_reservation: null,
+      current_reservation: undefined,
     },
     {
       id: 5,
@@ -55,7 +55,7 @@ async function getData(): Promise<Room[]> {
       type: "pool",
       price_per_hour: 20,
       // status: "vacant",
-      current_reservation: null,
+      current_reservation: undefined,
     },
   ];
 }

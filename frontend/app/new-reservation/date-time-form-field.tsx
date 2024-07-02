@@ -16,15 +16,29 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
+import { FieldValues } from "react-hook-form";
+import { ControllerProps, FieldPath } from "react-hook-form";
 
-export default function DateTimeFormField({ form }: any) {
+interface DateTimeFormFieldProps {
+  label: string;
+}
+
+export default function DateTimeFormField<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
+  ...props
+}: Omit<
+  ControllerProps<TFieldValues, TName> & DateTimeFormFieldProps,
+  "render"
+>) {
   return (
     <FormField
-      control={form.control}
-      name="dateTime"
+      control={props.control}
+      name={props.name}
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel className="text-left">Date & Time</FormLabel>
+          <FormLabel className="text-left">{props.label}</FormLabel>
           <Popover>
             <FormControl>
               <PopoverTrigger suppressHydrationWarning asChild>
@@ -46,9 +60,10 @@ export default function DateTimeFormField({ form }: any) {
             </FormControl>
             <PopoverContent className="w-auto p-0">
               <Calendar
-                mode="single"
+                mode="range"
                 selected={field.value}
                 onSelect={field.onChange}
+                fromDate={new Date()}
                 initialFocus
               />
               <div className="p-3 border-t border-border">
