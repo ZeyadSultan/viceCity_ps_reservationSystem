@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import * as DateFns from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { TimePickerDemo } from "./time-picker-demo";
+import { TimePickerDemo } from "../../app/new-reservation/time-picker-demo";
 import {
   FormControl,
   FormField,
@@ -60,7 +60,7 @@ export default function DateTimeFormField<
             </FormControl>
             <PopoverContent className="w-auto p-0">
               <Calendar
-                mode="range"
+                mode="single"
                 selected={field.value}
                 onSelect={field.onChange}
                 fromDate={new Date()}

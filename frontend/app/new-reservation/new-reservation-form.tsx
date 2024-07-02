@@ -16,14 +16,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import DateTimeFormField from "./date-time-form-field";
+import DateTimeFormField from "../../components/forms/date-time-form-field";
 import { TimePickerDemo } from "./time-picker-demo";
 import * as DateFns from "date-fns";
 
 import { Room } from "@/schemas";
-import SelectFormField from "@/components/select-form-field";
+import SelectFormField from "@/components/forms/select-form-field";
 import { SelectItem } from "@/components/ui/select";
-import TextFormField from "@/components/text-form-field";
+import TextFormField from "@/components/forms/text-form-field";
 
 const playstationOptionsSchema = z.object({
   type: z.union([z.literal("ps4"), z.literal("ps5")]),
