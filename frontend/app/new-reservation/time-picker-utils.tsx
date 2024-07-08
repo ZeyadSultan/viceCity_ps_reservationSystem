@@ -201,3 +201,14 @@ export function display12HourValue(hours: number) {
   if (hours % 12 > 9) return `${hours}`;
   return `0${hours % 12}`;
 }
+import { intervalToDuration } from "date-fns";
+
+export function getDurationFromDate(durationDate: Date) {
+  const dupDate = new Date(durationDate);
+  dupDate.setHours(0, 0, 0, 0);
+  const duration = intervalToDuration({
+    start: dupDate,
+    end: durationDate,
+  });
+  return duration;
+}

@@ -22,6 +22,7 @@ import { Room } from "@/schemas";
 import SelectFormField from "@/components/forms/select-form-field";
 import { SelectItem } from "@/components/ui/select";
 import TextFormField from "@/components/forms/text-form-field";
+import { getDurationFromDate } from "./time-picker-utils";
 
 const playstationOptionsSchema = z.object({
   type: z.union([z.literal("ps4"), z.literal("ps5")]),
@@ -30,7 +31,7 @@ const playstationOptionsSchema = z.object({
 
 const reservationFormSchema = z.object({
   dateTime: z.date(),
-  duration: z.date().optional(),
+  durationDate: z.date().optional(),
   roomId: z.string(),
   customerPhoneNumber: z.string().optional(),
   customerName: z.string().optional(),
@@ -70,14 +71,11 @@ function NewReservationForm({ rooms, randomNumber }: NewReservationFormProps) {
     // setFormAlertData({ message: "", type: "error" });
 
     try {
-      if (values.duration) {
-        const dupDate = new Date(values.duration);
-        dupDate.setHours(0, 0, 0, 0);
-        const durationn = DateFns.intervalToDuration({
-          start: dupDate,
-          end: values.duration,
-        });
-        const endTime = DateFns.add(values.dateTime, { ...durationn });
+      if (values.durationDate) {
+        const duration = getDurationFromDate(values.durationDate);
+        console.log(duration);
+
+        const endTime = DateFns.add(values.dateTime, duration);
       }
       console.log({ ...values });
     } catch (error: any) {
@@ -134,7 +132,7 @@ function NewReservationForm({ rooms, randomNumber }: NewReservationFormProps) {
           {/* <FormAlert {...formAlertData} /> */}
           <FormField
             control={form.control}
-            name="duration"
+            name="durationDate"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Duration</FormLabel>
