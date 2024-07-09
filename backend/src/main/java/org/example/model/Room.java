@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "rooms")
 @Data
@@ -24,7 +26,7 @@ public class Room {
 
     private boolean available;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "room")
     private List<Reservation> reservations;
 }
-

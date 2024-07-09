@@ -1,13 +1,17 @@
 package org.example.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "reservations")
-@Data
+@Getter
+@Setter
 public class Reservation {
 
     @Id
@@ -28,6 +32,7 @@ public class Reservation {
 
     private double cost;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;

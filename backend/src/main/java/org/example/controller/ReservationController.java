@@ -1,11 +1,15 @@
 package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.example.dto.ReservationDTO;
 import org.example.model.Reservation;
+import org.example.model.Room;
 import org.example.service.ReservationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.service.RoomService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -15,18 +19,29 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
+    private final RoomService roomService;
+
     @GetMapping
-    public List<Reservation> getAllReservations() {
+    public List<ReservationDTO> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
     @PostMapping
-    public Reservation createReservation(@RequestBody Reservation reservation) {
+    public Reservation createReservation(@RequestBody ReservationDTO reservationDto) {
+        Reservation reservation = new Reservation();
+        Room room = roomService.getRoomById(reservationDto.roomId());
+        reservation.setRoom(room);
+        LocalDateTime startTime = LocalDateTime.parse(reservationDto.startTime());
+        reservation.setStartTime(startTime);
+        LocalDateTime endTime = LocalDateTime.parse(reservationDto.endTime());
+        reservation.setEndTime(endTime);
+        reservation.setReserverName(reservationDto.reserverName());
+        reservation.setPhoneNumber(reservationDto.phoneNumber());
         return reservationService.createReservation(reservation);
     }
 
     @GetMapping("/{id}")
-    public Reservation getReservationById(@PathVariable Long id) {
+    public ReservationDTO getReservationById(@PathVariable Long id) {
         return reservationService.getReservationById(id);
     }
 

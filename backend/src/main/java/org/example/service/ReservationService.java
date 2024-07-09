@@ -1,6 +1,8 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+
+import org.example.dto.ReservationDTO;
 import org.example.exception.ApiError;
 import org.example.model.Reservation;
 import org.example.repository.ReservationRepository;
@@ -15,16 +17,18 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
 
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
+    public List<ReservationDTO> getAllReservations() {
+        return reservationRepository.findAll().stream().map(reservation -> {
+            return ReservationDTO.from(reservation);
+        }).toList();
     }
 
-    public Reservation getReservationById(Long id) {
+    public ReservationDTO getReservationById(Long id) {
         Optional<Reservation> reservationOptional = reservationRepository.findById(id);
-        if(reservationOptional.isEmpty()) {
+        if (reservationOptional.isEmpty()) {
             throw ApiError.notFound("No id with this reservation!");
         }
-        return reservationOptional.get();
+        return ReservationDTO.from(reservationOptional.get());
     }
 
     public Reservation createReservation(Reservation reservation) {
@@ -50,7 +54,7 @@ public class ReservationService {
 
     public void deleteReservation(Long id) {
         Optional<Reservation> reservationOptional = reservationRepository.findById(id);
-        if(reservationOptional.isEmpty()) {
+        if (reservationOptional.isEmpty()) {
             throw ApiError.notFound("No id with this reservation!");
         }
         reservationRepository.deleteById(id);
