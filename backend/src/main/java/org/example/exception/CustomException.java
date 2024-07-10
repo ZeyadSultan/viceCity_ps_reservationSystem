@@ -1,15 +1,17 @@
 package org.example.exception;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import org.springframework.http.HttpStatus;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomException extends RuntimeException {
     private String message;
     private HttpStatus httpStatus;
 }
-

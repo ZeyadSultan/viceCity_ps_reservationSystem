@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.exception.ApiError;
 import org.example.model.Room;
 import org.example.repository.RoomRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
