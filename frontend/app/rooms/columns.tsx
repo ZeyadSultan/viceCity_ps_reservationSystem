@@ -12,10 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Room } from "@/schemas";
 import { toEGP } from "@/lib/utils";
+import { RoomDTO } from "@/orval/api/model";
+import * as DateFns from "date-fns";
 
-export const columns: ColumnDef<Room>[] = [
+export const columns: ColumnDef<RoomDTO>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -28,14 +29,14 @@ export const columns: ColumnDef<Room>[] = [
     header: "Status",
     cell: ({ row }) => {
       const room = row.original;
-      return !!room.current_reservation ? "Occupied" : "Vacant";
+      return !!room.currentReservationDto ? "Occupied" : "Vacant";
     },
   },
   {
     header: "Book/Checkout",
     cell: ({ row }) => {
       const room = row.original;
-      return !!room.current_reservation ? (
+      return !!room.currentReservationDto ? (
         <Button variant="destructive" size="sm">
           Checkout
         </Button>
@@ -47,25 +48,27 @@ export const columns: ColumnDef<Room>[] = [
     },
   },
   {
-    accessorKey: "price_per_hour",
     header: "Price/Hour",
     cell: ({ row }) => {
-      return toEGP(row.getValue("price_per_hour"));
+      const room = row.original;
+      return toEGP(room.pricePerHour || 0);
     },
   },
   {
     header: "Duration",
     cell: ({ row }) => {
       const room = row.original;
-      if (!room.current_reservation) return "-";
-      const start = new Date(room.current_reservation.start_time);
-      const end = new Date();
-      const diff = end.getTime() - start.getTime();
-      console.log({ diff });
-
-      const hours = Math.floor(diff / 1000 / 60 / 60);
-      const minutes = Math.floor((diff / 1000 / 60) % 60);
-      return `${hours}h ${minutes}m`;
+      if (
+        !room.currentReservationDto ||
+        !room.currentReservationDto?.startTime ||
+        !room.currentReservationDto?.endTime
+      )
+        return "-";
+      const dur = DateFns.intervalToDuration({
+        start: room.currentReservationDto.startTime,
+        end: room.currentReservationDto.endTime,
+      });
+      return DateFns.formatDuration(dur);
     },
   },
   {
@@ -75,24 +78,23 @@ export const columns: ColumnDef<Room>[] = [
       const divideHourIntoChunks = 4;
 
       const room = row.original;
-      if (!room.current_reservation) return "-";
-      const start = new Date(room.current_reservation.start_time);
-      const end = new Date();
-      const diff = end.getTime() - start.getTime();
-      const minutes = Math.floor(diff / 1000 / 60);
+      if (
+        !room.currentReservationDto ||
+        !room.currentReservationDto.startTime ||
+        !room.currentReservationDto.endTime ||
+        !room.pricePerHour
+      )
+        return "-";
+
+      const minutes = DateFns.differenceInMinutes(
+        room.currentReservationDto.endTime,
+        room.currentReservationDto.startTime
+      );
       const chunks = Math.round(minutes / (60 / divideHourIntoChunks));
-      const cost = chunks * (room.price_per_hour / divideHourIntoChunks);
+      const cost = chunks * (room.pricePerHour / divideHourIntoChunks);
       return toEGP(cost);
     },
   },
-  // {
-  //   accessorKey: "type",
-  //   header: "Type",
-  // },
-  // {
-  //   accessorKey: "current_reservation_id",
-  //   header: "Current Reservation ID",
-  // }
   {
     id: "actions",
     cell: ({ row }) => {
@@ -109,7 +111,9 @@ export const columns: ColumnDef<Room>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(room.id.toString())}
+              onClick={() =>
+                navigator.clipboard.writeText(room.id?.toString() || "")
+              }
             >
               Copy Room ID
             </DropdownMenuItem>
