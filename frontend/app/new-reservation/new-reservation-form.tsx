@@ -18,47 +18,99 @@ import DateTimeFormField from "../../components/forms/date-time-form-field";
 import { TimePickerDemo } from "./time-picker-demo";
 import * as DateFns from "date-fns";
 
-import { Room } from "@/schemas";
 import SelectFormField from "@/components/forms/select-form-field";
 import { SelectItem } from "@/components/ui/select";
 import TextFormField from "@/components/forms/text-form-field";
 import { getDurationFromDate } from "./time-picker-utils";
+import {
+  createReservation,
+  getAllRoomsWithCurrReservation,
+} from "@/orval/api/api";
+import { useQuery } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
 
 const playstationOptionsSchema = z.object({
   type: z.union([z.literal("ps4"), z.literal("ps5")]),
   controllers: z.union([z.literal("single"), z.literal("multi")]),
 });
 
-const reservationFormSchema = z.object({
-  dateTime: z.date(),
-  durationDate: z.date().optional(),
-  roomId: z.string(),
-  customerPhoneNumber: z.string().optional(),
-  customerName: z.string().optional(),
-  playstationOptions: playstationOptionsSchema.optional(),
-});
+const reservationFormSchema = z
+  .object({
+    startDateTime: z.date(),
+    endDateTime: z.date(),
+    roomId: z.string(),
+    customerPhoneNumber: z.string().optional(),
+    customerName: z.string().optional(),
+    playstationOptions: playstationOptionsSchema.optional(),
+  })
+  .refine(
+    (data) => {
+      if (!DateFns.isAfter(data.endDateTime, data.startDateTime)) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "End date must be after start date",
+      path: ["endDateTime"],
+    }
+  );
 type FormSchemaType = z.infer<typeof reservationFormSchema>;
 
 interface NewReservationFormProps {
-  rooms: Room[];
   randomNumber: number;
 }
 
-function NewReservationForm({ rooms, randomNumber }: NewReservationFormProps) {
+function NewReservationForm({ randomNumber }: NewReservationFormProps) {
+  /**
+   * Quick and dirty fix for the shadcn-ui select component preserving the selected value even after resetting
+   * FIXME: find a better way to reset the select component
+   */
+  const [reRenderSelect, setReRenderSelect] = useState(new Date());
+  const {
+    isPending,
+    error,
+    data: rooms,
+    refetch: refetchRooms,
+  } = useQuery({
+    queryKey: ["availableRooms"],
+    queryFn: async () => {
+      const rooms = await getAllRoomsWithCurrReservation();
+      return rooms.filter((room) => !room.currentReservationDto);
+    },
+  });
+
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
-      dateTime: new Date(),
+      startDateTime: new Date(),
+      endDateTime: new Date(),
+      customerName: "",
+      customerPhoneNumber: "",
     },
   });
+
   const chosenRoomId = form.watch("roomId");
-  const isPlaystaion = useMemo(
-    () =>
-      rooms.find((room) => `${room.id}` === `${chosenRoomId}`)?.type ===
-      "playstaion",
-    [chosenRoomId]
-  );
+  const isPlaystaion = useMemo(() => {
+    if (!rooms) return false;
+    const chosenRoom = rooms.find((room) => `${room.id}` === `${chosenRoomId}`);
+    return (
+      chosenRoom?.type === "PLAYSTATION_ROOM" ||
+      chosenRoom?.type === "PLAYSTATION_PARTITION"
+    );
+  }, [chosenRoomId]);
   useEffect(() => form.resetField("playstationOptions"), [isPlaystaion]);
+
+  const duration = useMemo(() => {
+    const startDateTime = form.watch("startDateTime");
+    const endDateTime = form.watch("endDateTime");
+    const dur = DateFns.intervalToDuration({
+      start: startDateTime,
+      end: endDateTime,
+    });
+    return DateFns.formatDuration(dur);
+  }, [form.watch("startDateTime"), form.watch("endDateTime")]);
+
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   // const [formAlertData, setFormAlertData] = useState<FormAlertProps>({
@@ -71,13 +123,22 @@ function NewReservationForm({ rooms, randomNumber }: NewReservationFormProps) {
     // setFormAlertData({ message: "", type: "error" });
 
     try {
-      if (values.durationDate) {
-        const duration = getDurationFromDate(values.durationDate);
-        console.log(duration);
+      const _ = await createReservation({
+        reserverName: values.customerName,
+        phoneNumber: values.customerPhoneNumber,
+        roomId: parseInt(values.roomId),
+        startTime: values.startDateTime.toISOString(),
+        endTime: values.endDateTime.toISOString(),
+      });
 
-        const endTime = DateFns.add(values.dateTime, duration);
-      }
-      console.log({ ...values });
+      await refetchRooms();
+      form.reset();
+      setReRenderSelect(new Date());
+
+      toast({
+        title: "Room Booked",
+        description: `Room booked successfully`,
+      });
     } catch (error: any) {
       console.log(error);
       toast({
@@ -93,6 +154,7 @@ function NewReservationForm({ rooms, randomNumber }: NewReservationFormProps) {
   const playstationFormFields = (
     <>
       <SelectFormField
+        key={+reRenderSelect + "type"}
         control={form.control}
         name="playstationOptions.type"
         label="Playstation Type"
@@ -104,6 +166,7 @@ function NewReservationForm({ rooms, randomNumber }: NewReservationFormProps) {
         <SelectItem value="ps5">PS5</SelectItem>
       </SelectFormField>
       <SelectFormField
+        key={+reRenderSelect + "controllers"}
         control={form.control}
         name="playstationOptions.controllers"
         label="Controllers"
@@ -118,44 +181,51 @@ function NewReservationForm({ rooms, randomNumber }: NewReservationFormProps) {
   );
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 max-w-lg">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           {/*====================================================*/}
           <DateTimeFormField
             control={form.control}
-            name="dateTime"
-            label="Date & Time"
+            name="startDateTime"
+            label="Start Date & Time"
             disabled={submitting}
           />
           {/*====================================================*/}
           {/* <FormAlert {...formAlertData} /> */}
-          <FormField
+          <DateTimeFormField
             control={form.control}
-            name="durationDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Duration</FormLabel>
-                <FormControl>
-                  <TimePickerDemo setDate={field.onChange} date={field.value} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            name="endDateTime"
+            label="End Date & Time"
+            disabled={submitting}
           />
           {/*====================================================*/}
+          <FormItem>
+            <FormLabel>Duration</FormLabel>
+            <Input disabled type="text" value={duration} />
+          </FormItem>
+          {/*====================================================*/}
           <SelectFormField
+            key={+reRenderSelect + "roomId"}
             control={form.control}
             name="roomId"
-            label="Room ID"
+            label="Available Rooms"
             triggerPlaceholder="Select Room"
             disabled={submitting}
           >
-            {rooms?.map((room, i) => (
-              <SelectItem key={i} value={room.id.toString()}>
-                {room.name}
+            {!rooms && (
+              <SelectItem disabled value="No Available Rooms">
+                No Available Rooms
               </SelectItem>
-            ))}
+            )}
+            {rooms?.map(
+              (room, i) =>
+                room?.id && (
+                  <SelectItem key={i} value={room.id.toString()}>
+                    {room.name}
+                  </SelectItem>
+                )
+            )}
           </SelectFormField>
           {/*====================================================*/}
           {isPlaystaion && playstationFormFields}
