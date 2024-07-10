@@ -11,6 +11,8 @@ public record ReservationDTO(
     double cost,
     Long id) {
   public static ReservationDTO from(Reservation reservation) {
+    if (reservation == null)
+      return null;
     ReservationDTO reservationDTO = new ReservationDTO(
         reservation.getRoom().getId(),
         reservation.getStartTime().toString(),

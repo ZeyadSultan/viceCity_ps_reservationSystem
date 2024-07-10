@@ -8,6 +8,7 @@ import org.example.model.Reservation;
 import org.example.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,22 @@ import java.util.Optional;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+
+    public ReservationDTO getLatestReservationByRoomId(Long roomId) {
+        return ReservationDTO.from(reservationRepository.findFirstByRoomIdOrderByStartTimeDesc(roomId));
+    }
+
+    public ReservationDTO getCurrentReservationByRoomId(Long roomId) {
+        ReservationDTO latestReservation = this.getLatestReservationByRoomId(roomId);
+        if (latestReservation == null) {
+            return null;
+        }
+        boolean isCurrent = LocalDateTime.parse(latestReservation.endTime()).isAfter(LocalDateTime.now());
+        if (isCurrent) {
+            return latestReservation;
+        }
+        return null;
+    }
 
     public List<ReservationDTO> getAllReservations() {
         return reservationRepository.findAll().stream().map(reservation -> {

@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "rooms")
@@ -26,7 +26,7 @@ public class Room {
 
     private boolean available;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "room")
+    @JsonIgnore
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 }
