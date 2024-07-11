@@ -38,7 +38,7 @@ function SelectFormField<
           <FormLabel>{props.label}</FormLabel>
           <Select
             onValueChange={field.onChange}
-            defaultValue={props.defaultValue}
+            defaultValue={field.value || props.defaultValue}
             disabled={field.disabled || props.disabled}
           >
             <FormControl>

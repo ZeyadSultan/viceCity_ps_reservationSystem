@@ -55,13 +55,29 @@ const reservationFormSchema = z
       path: ["endDateTime"],
     }
   );
-type FormSchemaType = z.infer<typeof reservationFormSchema>;
+export type NewReservationFormSchema = z.infer<typeof reservationFormSchema>;
+
+/**
+ * TS hack to ensure prefillable data already exist in the reservationSchema
+ * Add more literal values to make more PreFillableFields
+ */
+export type PreFillableFields = Partial<
+  Pick<
+    NewReservationFormSchema,
+    "customerPhoneNumber" | "customerName" | "roomId"
+  >
+>;
 
 interface NewReservationFormProps {
   randomNumber: number;
+  preFilledData?: PreFillableFields;
 }
 
-function NewReservationForm({ randomNumber }: NewReservationFormProps) {
+// FIXME: Select component for the room Id selects a non existing roomId if supplied in url search params, this is considered user error and handeled good enough
+function NewReservationForm({
+  randomNumber,
+  preFilledData,
+}: NewReservationFormProps) {
   /**
    * Quick and dirty fix for the shadcn-ui select component preserving the selected value even after resetting
    * FIXME: find a better way to reset the select component
@@ -79,14 +95,14 @@ function NewReservationForm({ randomNumber }: NewReservationFormProps) {
       return rooms.filter((room) => !room.currentReservationDto);
     },
   });
-
-  const form = useForm<FormSchemaType>({
+  const form = useForm<NewReservationFormSchema>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
       startDateTime: new Date(),
       endDateTime: new Date(),
       customerName: "",
       customerPhoneNumber: "",
+      ...preFilledData,
     },
   });
 
@@ -94,6 +110,7 @@ function NewReservationForm({ randomNumber }: NewReservationFormProps) {
   const isPlaystaion = useMemo(() => {
     if (!rooms) return false;
     const chosenRoom = rooms.find((room) => `${room.id}` === `${chosenRoomId}`);
+    setReRenderSelect(new Date());
     return (
       chosenRoom?.type === "PLAYSTATION_ROOM" ||
       chosenRoom?.type === "PLAYSTATION_PARTITION"
@@ -118,7 +135,7 @@ function NewReservationForm({ randomNumber }: NewReservationFormProps) {
   //   type: "error",
   // });
 
-  async function onSubmit(values: FormSchemaType) {
+  async function onSubmit(values: NewReservationFormSchema) {
     setSubmitting(true);
     // setFormAlertData({ message: "", type: "error" });
 
@@ -143,7 +160,7 @@ function NewReservationForm({ randomNumber }: NewReservationFormProps) {
       console.log(error);
       toast({
         title: "Error",
-        description: error?.message,
+        description: error?.response?.data?.message || error?.message,
         variant: "destructive",
       });
     } finally {

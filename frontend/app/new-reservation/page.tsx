@@ -1,12 +1,25 @@
-import NewReservationForm from "./new-reservation-form";
+import NewReservationForm, { PreFillableFields } from "./new-reservation-form";
 
-async function NewReservationPage() {
+type SearchParams = { [key: string]: string | undefined };
+
+type NewReservationPageProps = {
+  searchParams: SearchParams;
+};
+
+async function NewReservationPage({ searchParams }: NewReservationPageProps) {
+  const preFilledData: PreFillableFields = {
+    customerName: searchParams?.customerName,
+    customerPhoneNumber: searchParams?.customerPhoneNumber,
+    roomId: searchParams?.roomId,
+  };
   // generating random here to match server with client to avoid hydration errors
   const randomNumber = Math.random();
   return (
     <>
-      {/* <NewReservationForm rooms={availableRooms} randomNumber={randomNumber} /> */}
-      <NewReservationForm randomNumber={randomNumber} />
+      <NewReservationForm
+        preFilledData={preFilledData}
+        randomNumber={randomNumber}
+      />
     </>
   );
 }
