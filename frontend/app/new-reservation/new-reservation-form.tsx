@@ -88,6 +88,7 @@ function NewReservationForm({
     error,
     data: rooms,
     refetch: refetchRooms,
+    isFetched,
   } = useQuery({
     queryKey: ["availableRooms"],
     queryFn: async () => {
@@ -110,12 +111,11 @@ function NewReservationForm({
   const isPlaystaion = useMemo(() => {
     if (!rooms) return false;
     const chosenRoom = rooms.find((room) => `${room.id}` === `${chosenRoomId}`);
-    setReRenderSelect(new Date());
     return (
       chosenRoom?.type === "PLAYSTATION_ROOM" ||
       chosenRoom?.type === "PLAYSTATION_PARTITION"
     );
-  }, [chosenRoomId]);
+  }, [chosenRoomId, isFetched]);
   useEffect(() => form.resetField("playstationOptions"), [isPlaystaion]);
 
   const duration = useMemo(() => {
