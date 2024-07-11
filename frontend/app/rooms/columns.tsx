@@ -15,6 +15,7 @@ import {
 import { toEGP } from "@/lib/utils";
 import { RoomDTO } from "@/orval/api/model";
 import * as DateFns from "date-fns";
+import Link from "next/link";
 
 export const columns: ColumnDef<RoomDTO>[] = [
   {
@@ -36,13 +37,14 @@ export const columns: ColumnDef<RoomDTO>[] = [
     header: "Book/Checkout",
     cell: ({ row }) => {
       const room = row.original;
+      const bookUrl = `/new-reservation?roomId=${room.id}`;
       return !!room.currentReservationDto ? (
         <Button variant="destructive" size="sm">
           Checkout
         </Button>
       ) : (
-        <Button variant="success" size="sm">
-          Book
+        <Button variant="success" size="sm" asChild>
+          <Link href={bookUrl}>Book</Link>
         </Button>
       );
     },
@@ -74,25 +76,12 @@ export const columns: ColumnDef<RoomDTO>[] = [
   {
     header: "Cost",
     cell: ({ row }) => {
-      //TODO: make user configurable
-      const divideHourIntoChunks = 4;
-
       const room = row.original;
-      if (
-        !room.currentReservationDto ||
-        !room.currentReservationDto.startTime ||
-        !room.currentReservationDto.endTime ||
-        !room.pricePerHour
-      )
+      if (!room.currentReservationDto || !room.currentReservationDto.cost) {
         return "-";
+      }
 
-      const minutes = DateFns.differenceInMinutes(
-        room.currentReservationDto.endTime,
-        room.currentReservationDto.startTime
-      );
-      const chunks = Math.round(minutes / (60 / divideHourIntoChunks));
-      const cost = chunks * (room.pricePerHour / divideHourIntoChunks);
-      return toEGP(cost);
+      return toEGP(room.currentReservationDto.cost);
     },
   },
   {
