@@ -5,6 +5,7 @@ import { MainNavItem } from "@/types";
 import MainNav from "@/components/main-nav";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ThemeModeToggle } from "@/components/theme-mode-toggle";
+import { Toaster } from "@/components/ui/toaster";
 
 import "./globals.css";
 
@@ -17,13 +18,18 @@ export const metadata: Metadata = {
 
 const routes: MainNavItem[] = [
   {
+    title: "Rooms",
+    href: "/rooms",
+    disabled: false,
+  },
+  {
     title: "New Reservation",
     href: "/new-reservation",
     disabled: false,
   },
   {
-    title: "Rooms",
-    href: "/rooms",
+    title: "New Room",
+    href: "/new-room",
     disabled: false,
   },
 ];
@@ -34,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`min-h-[100vh] grid grid-rows-[auto_1fr] ${inter.className}`}
       >
@@ -51,6 +57,7 @@ export default function RootLayout({
             </div>
           </header>
           <main className="max-w-screen-lg w-full mx-auto px-8">
+            <Toaster />
             <ReactQueryProvider>{children}</ReactQueryProvider>
           </main>
         </ThemeProvider>
