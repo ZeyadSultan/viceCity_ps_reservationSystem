@@ -51,12 +51,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <header className="z-40 bg-background px-8">
-            <div className="max-w-screen-lg w-full mx-auto flex h-20 items-center justify-between py-6">
+            <div className="max-w-screen-2xl w-full mx-auto flex h-20 items-center justify-between py-6">
               <MainNav items={routes} />
               <ThemeModeToggle />
             </div>
           </header>
-          <main className="max-w-screen-lg w-full mx-auto px-8">
+          <main className="max-w-screen-2xl w-full mx-auto px-8">
             <Toaster />
             <ReactQueryProvider>{children}</ReactQueryProvider>
           </main>

@@ -47,11 +47,13 @@ export type NewRoomFormSchema = z.infer<typeof roomFormSchema>;
 //  */
 // export type PreFillableFields = Partial<Pick<NewRoomFormSchema, "name">>;
 
-interface NewRoomFormProps {
+type NewRoomFormProps = {
+  dialogMode?: boolean;
+  closeDialog?: () => void;
   // preFilledData?: PreFillableFields;
-}
+};
 
-function NewRoomForm({}: NewRoomFormProps) {
+function NewRoomForm({ dialogMode = false, closeDialog }: NewRoomFormProps) {
   const [reRenderSelect, setReRenderSelect] = useState(new Date());
   const form = useForm<NewRoomFormSchema>({
     resolver: zodResolver(roomFormSchema),
@@ -92,6 +94,9 @@ function NewRoomForm({}: NewRoomFormProps) {
       });
     } finally {
       setSubmitting(false);
+      if (dialogMode && closeDialog) {
+        closeDialog();
+      }
     }
   }
   return (
@@ -148,6 +153,18 @@ function NewRoomForm({}: NewRoomFormProps) {
         >
           Create
         </Button>
+        {dialogMode && closeDialog && (
+          <Button
+            disabled={submitting}
+            size="lg"
+            className="w-full"
+            type="button"
+            variant="secondary"
+            onClick={() => closeDialog()}
+          >
+            Close
+          </Button>
+        )}
       </form>
     </Form>
   );
