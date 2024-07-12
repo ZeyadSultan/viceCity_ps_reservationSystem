@@ -1,33 +1,26 @@
 "use client";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import DateTimeFormField from "../../components/forms/date-time-form-field";
-import { TimePickerDemo } from "./time-picker-demo";
 import * as DateFns from "date-fns";
 
-import SelectFormField from "@/components/forms/select-form-field";
+import { Form, FormItem, FormLabel } from "@/components/ui/form";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 import { SelectItem } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+
+import DateTimeFormField from "@/components/forms/date-time-form-field";
+import SelectFormField from "@/components/forms/select-form-field";
 import TextFormField from "@/components/forms/text-form-field";
-import { getDurationFromDate } from "./time-picker-utils";
+
 import {
   createReservation,
   getAllRoomsWithCurrReservation,
 } from "@/orval/api/api";
-import { useQuery } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
 
 const playstationOptionsSchema = z.object({
   type: z.union([z.literal("ps4"), z.literal("ps5")]),
