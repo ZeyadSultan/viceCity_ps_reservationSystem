@@ -95,63 +95,61 @@ function NewRoomForm({}: NewRoomFormProps) {
     }
   }
   return (
-    <div className="container mx-auto py-10 max-w-lg">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          {/* <FormAlert {...formAlertData} /> */}
-          <SelectFormField
-            key={reRenderSelect + "room_type"}
-            control={form.control}
-            name="type"
-            label="Room Type"
-            triggerPlaceholder="Select Room Type"
-            disabled={submitting}
-          >
-            {ROOM_TYPES.map((type) => (
-              <SelectItem key={type} value={type}>
-                {toSentenceCase(type)}
-              </SelectItem>
-            ))}
-          </SelectFormField>
-          {/*====================================================*/}
-          <TextFormField
-            control={form.control}
-            name="name"
-            label="Room Name"
-            placeholder="Room 1"
-            disabled={submitting}
-          />
-          {/*====================================================*/}
-          <FormField
-            control={form.control}
-            name="pricePerHour"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price/Hour</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    min={1}
-                    step={0.01}
-                    disabled={submitting}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            disabled={submitting}
-            size="lg"
-            className="w-full"
-            type="submit"
-          >
-            Create
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* <FormAlert {...formAlertData} /> */}
+        <SelectFormField
+          key={reRenderSelect + "room_type"}
+          control={form.control}
+          name="type"
+          label="Room Type"
+          triggerPlaceholder="Select Room Type"
+          disabled={submitting}
+        >
+          {ROOM_TYPES.map((type) => (
+            <SelectItem key={type} value={type}>
+              {toSentenceCase(type)}
+            </SelectItem>
+          ))}
+        </SelectFormField>
+        {/*====================================================*/}
+        <TextFormField
+          control={form.control}
+          name="name"
+          label="Room Name"
+          placeholder="Room 1"
+          disabled={submitting}
+        />
+        {/*====================================================*/}
+        <FormField
+          control={form.control}
+          name="pricePerHour"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price/Hour</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min={1}
+                  step={0.01}
+                  disabled={submitting}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          disabled={submitting}
+          size="lg"
+          className="w-full"
+          type="submit"
+        >
+          Create
+        </Button>
+      </form>
+    </Form>
   );
 }
 
