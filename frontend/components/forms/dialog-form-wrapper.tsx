@@ -1,5 +1,5 @@
 import React, { JSXElementConstructor, useCallback, useState } from "react";
-
+//FIXME: rename to dialog-action-wrapper as it can be used for any action not just forms
 import {
   Dialog,
   DialogContent,

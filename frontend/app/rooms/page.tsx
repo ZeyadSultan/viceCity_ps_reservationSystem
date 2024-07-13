@@ -41,6 +41,7 @@ export default function RoomsPage() {
         description={undefined}
         columns={columns}
         data={rooms || []}
+        refetchData={refetchRooms}
       />
     </div>
   );

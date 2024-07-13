@@ -29,6 +29,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   title?: string;
   description?: string;
+  refetchData?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -36,11 +37,15 @@ export function DataTable<TData, TValue>({
   data,
   title,
   description,
+  refetchData,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    meta: {
+      refetchData,
+    },
   });
 
   return (
