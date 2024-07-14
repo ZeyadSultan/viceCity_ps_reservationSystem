@@ -32,7 +32,7 @@ interface DataTableProps<TData, TValue> {
   refetchData?: () => void;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTableCard<TData, TValue>({
   columns,
   data,
   title,

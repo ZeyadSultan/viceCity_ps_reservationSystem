@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 
 import { columns } from "./columns";
-import { DataTable } from "./data-table";
+import { DataTableCard } from "@/components/data-table-card";
 
 import { Button } from "@/components/ui/button";
 import DialogFormWrapper from "@/components/forms/dialog-form-wrapper";
@@ -19,7 +19,7 @@ export default function RoomsPage() {
     queryFn: getAllRoomsWithCurrReservation,
   });
   return (
-    <div className="container mx-auto py-10">
+    <>
       <div className="py-4">
         <div className="w-fit ms-auto">
           <DialogFormWrapper
@@ -36,13 +36,13 @@ export default function RoomsPage() {
           />
         </div>
       </div>
-      <DataTable
+      <DataTableCard
         title={"Rooms"}
         description={undefined}
         columns={columns}
         data={rooms || []}
         refetchData={refetchRooms}
       />
-    </div>
+    </>
   );
 }
