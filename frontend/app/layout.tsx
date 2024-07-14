@@ -23,6 +23,11 @@ const routes: MainNavItem[] = [
     disabled: false,
   },
   {
+    title: "Reservations",
+    href: "/reservations",
+    disabled: false,
+  },
+  {
     title: "New Reservation",
     href: "/new-reservation",
     disabled: false,
