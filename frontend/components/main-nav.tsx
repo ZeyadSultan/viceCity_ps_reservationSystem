@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { useSelectedLayoutSegments } from "next/navigation";
 
 import { MainNavItem } from "@/types";
 import { siteConfig } from "@/config/site";
@@ -16,7 +16,11 @@ interface MainNavProps {
 }
 
 function MainNav({ items, children }: MainNavProps) {
-  const segment = useSelectedLayoutSegment();
+  const segments = useSelectedLayoutSegments();
+  const segment = React.useMemo(
+    () => segments.filter((segment) => !segment.startsWith("("))[0],
+    [segments]
+  );
   const [showMobileMenu, setShowMobileMenu] = React.useState<boolean>(false);
 
   return (
