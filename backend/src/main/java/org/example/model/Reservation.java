@@ -1,10 +1,10 @@
 package org.example.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -12,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Table(name = "reservations")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reservation {
 
     @Id
@@ -25,12 +28,14 @@ public class Reservation {
     private String phoneNumber;
 
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private Date startTime;
 
     @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private Date endTime;
 
     private double cost;
+
+    private boolean multi;
 
     @JsonBackReference
     @ManyToOne

@@ -21,10 +21,11 @@ public class Room {
     @Enumerated(EnumType.STRING)
     private RoomType type;
 
-    @Column(name = "price_per_hour")
-    private double pricePerHour;
+    private double priceSingle;
 
     private boolean available;
+
+    private double priceMulti;
 
     @JsonIgnore
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)

@@ -26,23 +26,21 @@ public class RoomService {
         return roomOptional.get();
     }
 
+    public List<Room> getAvailableRooms() {
+        List<Room> rooms = roomRepository.findByAvailable(true);
+        if(rooms.isEmpty()) {
+            throw ApiError.notFound("No rooms available!");
+        }
+        return rooms;
+    }
+
     public Room createRoom(Room room) {
 
         return roomRepository.save(room);
     }
 
-    public Room updateRoom(Long id, Room room) {
-        Optional<Room> roomOptional = roomRepository.findById(id);
-        if (roomOptional.isPresent()) {
-            Room existingRoom = roomOptional.get();
-            existingRoom.setName(room.getName());
-            existingRoom.setType(room.getType());
-            existingRoom.setPricePerHour(room.getPricePerHour());
-            existingRoom.setAvailable(room.isAvailable());
-            return roomRepository.save(existingRoom);
-        } else {
-            throw ApiError.notFound("No room with this id!");
-        }
+    public void saveRoom(Room room) {
+        roomRepository.save(room);
     }
 
     public void deleteRoom(Long id) {
