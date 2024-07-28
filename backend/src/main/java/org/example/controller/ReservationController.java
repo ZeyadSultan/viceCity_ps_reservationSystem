@@ -28,7 +28,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservation);
     }
 
-    @PostMapping("/checkout/{reservationId}")
+    @GetMapping("/checkout/{reservationId}")
     public ResponseEntity<Reservation> checkout(@PathVariable("reservationId") long reservationId) {
         Reservation reservation = reservationService.checkout(reservationId);
         return ResponseEntity.ok(reservation);
@@ -49,4 +49,5 @@ public class ReservationController {
     public void deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
     }
+
 }

@@ -1,26 +1,29 @@
 package org.example.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
 import org.example.dto.ReserveDTO;
 import org.example.exception.ApiError;
 import org.example.model.Reservation;
 import org.example.model.Room;
 import org.example.repository.ReservationRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final RoomService roomService;
+
+    public ReservationService(ReservationRepository reservationRepository, @Lazy RoomService roomService) {
+        this.reservationRepository = reservationRepository;
+        this.roomService = roomService;
+    }
 
 //    public ReservationDTO getLatestReservationByRoomId(Long roomId) {
 //        return ReservationDTO.from(reservationRepository.findFirstByRoomIdOrderByStartTimeDesc(roomId));
@@ -115,5 +118,9 @@ public class ReservationService {
             throw ApiError.notFound("No id with this reservation!");
         }
         reservationRepository.deleteById(id);
+    }
+
+    public Reservation findCurrentReservation(Long roomId) {
+        return reservationRepository.findTopByRoomIdOrderByStartTimeDesc(roomId);
     }
 }

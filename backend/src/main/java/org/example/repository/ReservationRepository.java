@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
   List<Reservation> findAllByRoomId(Long roomId);
+  Reservation findTopByRoomIdOrderByStartTimeDesc(Long roomId);
 }
