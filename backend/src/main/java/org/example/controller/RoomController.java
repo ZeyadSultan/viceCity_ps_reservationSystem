@@ -3,6 +3,7 @@ package org.example.controller;
 import lombok.RequiredArgsConstructor;
 
 //import org.example.dto.RoomDTO;
+import org.example.dto.RoomsReservationsDTO;
 import org.example.model.Room;
 import org.example.service.ReservationService;
 import org.example.service.RoomService;
@@ -41,5 +42,10 @@ public class RoomController {
     @DeleteMapping("/{id}")
     public void deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
+    }
+
+    @GetMapping("/roomsReservations")
+    public ResponseEntity<List<RoomsReservationsDTO>> getRoomsReservations() {
+        return ResponseEntity.ok(roomService.getRoomsReservations());
     }
 }
