@@ -8,6 +8,8 @@ import lombok.Data;
 
 import java.util.Date;
 
+import org.example.model.Room;
+
 @Data
 public class ReservationDTO {
     private Long id;

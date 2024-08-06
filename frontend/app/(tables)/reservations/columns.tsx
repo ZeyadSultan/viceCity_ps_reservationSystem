@@ -26,8 +26,8 @@ export const columns: ColumnDef<ReservationDTO>[] = [
     header: "ID",
   },
   {
-    accessorKey: "roomId",
-    header: "Room ID",
+    accessorFn: (row) => row.room?.name || "-",
+    header: "Room Name",
   },
   {
     header: "Customer Name",
