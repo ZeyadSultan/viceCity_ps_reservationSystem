@@ -68,7 +68,14 @@ export const columns: ColumnDef<ReservationDTO>[] = [
   {
     id: "actions",
     cell: ({ row, table }) => {
-      const [isMenuOpen, setIsMenuOpen] = useState(false);
+      return <ActionCell row={row} table={table} />;
+    },
+  },
+];
+
+
+function ActionCell({row, table}: any) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
       const { toast } = useToast();
       const reservation = row.original;
       const deleteMenuItem = (
@@ -130,6 +137,4 @@ export const columns: ColumnDef<ReservationDTO>[] = [
           </DropdownMenuContent>
         </DropdownMenu>
       );
-    },
-  },
-];
+}
