@@ -35,7 +35,7 @@ public class ReservationService {
             reservationDTO.setMulti(reservation.isMulti());
             reservationDTO.setReserverName(reservation.getReserverName());
             reservationDTO.setCost(reservation.getCost());
-            reservationDTO.setRoomId(reservation.getRoom().getId());
+            reservationDTO.setRoom(reservation.getRoom());
             reservationDTO.setStartTime(reservation.getStartTime());
             reservationDTO.setEndTime(reservation.getEndTime());
             reservationDTO.setPhoneNumber(reservation.getPhoneNumber());
