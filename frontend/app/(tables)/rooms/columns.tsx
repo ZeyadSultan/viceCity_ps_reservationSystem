@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getRoomPrice, isPlaystaion, toEGP } from "@/lib/utils";
+import { isPlaystaion, toEGP } from "@/lib/utils";
 import { Reservation, RoomsReservationsDTO } from "@/orval/api/model";
 import * as DateFns from "date-fns";
 import Link from "next/link";
@@ -130,8 +130,15 @@ export const columns: ColumnDef<RoomsReservationsDTO>[] = [
     header: "Price/Hour",
     cell: ({ row }) => {
       const room = row.original;
-      const price = getRoomPrice(room);
-      return toEGP(price || 0);
+      if (isPlaystaion(room.type)) {
+        return (
+          <div className="flex flex-col gap-1">
+            <span>Single: {room.priceSingle}</span>
+            <span>Multi: {room.priceMulti}</span>
+          </div>
+        );
+      }
+      return toEGP(room.priceSingle || 0);
     },
   },
   {

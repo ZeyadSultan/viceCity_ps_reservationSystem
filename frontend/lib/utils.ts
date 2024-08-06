@@ -54,13 +54,3 @@ export const isPlaystaion = (
     roomType === "PLAYSTATION_PARTITION" || roomType === "PLAYSTATION_ROOM"
   );
 };
-
-export const getRoomPrice = (room: RoomsReservationsDTO) => {
-  if (!isPlaystaion(room?.type)) {
-    return room.priceSingle;
-  }
-  if (room.priceMulti || room.priceMulti === 0) {
-    return room.priceSingle;
-  }
-  return room.priceMulti;
-};
