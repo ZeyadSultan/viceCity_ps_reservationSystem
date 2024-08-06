@@ -24,5 +24,5 @@ public class ReservationDTO {
 
     private boolean multi;
 
-    private Long roomId;
+    private Room room;
 }
