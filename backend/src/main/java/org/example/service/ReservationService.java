@@ -87,7 +87,13 @@ public class ReservationService {
         long durationMinutes = durationMillis / (1000 * 60);
         double durationHours = durationMinutes / 60.0;
 
-        double totalCost = room.getPriceSingle() * durationHours;
+        double totalCost = 0;
+        if(reservation.isMulti()) {
+            totalCost = room.getPriceMulti() * durationHours;
+        }
+        else {
+            totalCost = room.getPriceSingle() * durationHours;
+        }
         reservation.setCost(Math.floor(totalCost));
         room.setAvailable(true);
 //        roomService.saveRoom(room);
