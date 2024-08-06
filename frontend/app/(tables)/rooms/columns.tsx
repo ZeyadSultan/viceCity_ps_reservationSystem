@@ -12,16 +12,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toEGP } from "@/lib/utils";
-import { RoomDTO } from "@/orval/api/model";
+import { getRoomPrice, isPlaystaion, toEGP } from "@/lib/utils";
+import { Reservation, RoomsReservationsDTO } from "@/orval/api/model";
 import * as DateFns from "date-fns";
 import Link from "next/link";
 import AlertDialogActionWrapper from "@/components/alert-dialog-action-wrapper";
-import { useState } from "react";
-import { deleteRoom } from "@/orval/api/api";
+import { useEffect, useState } from "react";
+import { checkout, deleteRoom } from "@/orval/api/api";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-export const columns: ColumnDef<RoomDTO>[] = [
+export const columns: ColumnDef<RoomsReservationsDTO>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -34,18 +43,82 @@ export const columns: ColumnDef<RoomDTO>[] = [
     header: "Status",
     cell: ({ row }) => {
       const room = row.original;
-      return !!room.currentReservationDto ? "Occupied" : "Vacant";
+      return !!room.currentReservation ? "Occupied" : "Vacant";
     },
   },
   {
     header: "Book/Checkout",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const room = row.original;
       const bookUrl = `/new-reservation?roomId=${room.id}`;
-      return !!room.currentReservationDto ? (
-        <Button variant="destructive" size="sm">
-          Checkout
-        </Button>
+
+      const { toast } = useToast();
+      const [dialogOpen, setDialogOpen] = useState(false);
+      const [reservation, setReservation] = useState<Reservation>();
+
+      useEffect(() => {
+        if (!dialogOpen) {
+          //FIXME: fix TS error
+          //FIXME: this is bad & resource intensive, figure out how to edit state locally instead of fetching all data
+          table.options.meta?.refetchData?.();
+        }
+      }, [dialogOpen]);
+
+      return !!room.currentReservation ? (
+        <>
+          <AlertDialogActionWrapper
+            title="Are you sure?"
+            description="This will end user session and checkout the room"
+            destructive
+            onConfirm={() => {
+              if (!room.id || !room.currentReservation?.id) return;
+              checkout(room.currentReservation.id)
+                .then((res) => {
+                  setDialogOpen(true);
+                  res && setReservation(res);
+                })
+                .catch((err) => {
+                  console.error(err);
+                  toast({
+                    title: "Error",
+                    description: "Failed to checkout",
+                    variant: "destructive",
+                  });
+                });
+            }}
+            trigger={
+              <Button variant="destructive" size="sm">
+                Checkout
+              </Button>
+            }
+          />
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Session Cost</DialogTitle>
+                <DialogDescription>
+                  Duration:{" "}
+                  {reservation?.startTime &&
+                    reservation?.endTime &&
+                    DateFns.formatDuration(
+                      DateFns.intervalToDuration({
+                        start: reservation?.startTime,
+                        end: reservation?.endTime,
+                      })
+                    )}
+                </DialogDescription>
+              </DialogHeader>
+              <div>Cost: {toEGP(reservation?.cost || 0)}</div>
+              <DialogFooter className="sm:justify-start">
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Close
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
       ) : (
         <Button variant="success" size="sm" asChild>
           <Link href={bookUrl}>Book</Link>
@@ -57,37 +130,36 @@ export const columns: ColumnDef<RoomDTO>[] = [
     header: "Price/Hour",
     cell: ({ row }) => {
       const room = row.original;
-      return toEGP(room.pricePerHour || 0);
+      const price = getRoomPrice(room);
+      return toEGP(price || 0);
     },
   },
   {
     header: "Duration",
     cell: ({ row }) => {
       const room = row.original;
-      if (
-        !room.currentReservationDto ||
-        !room.currentReservationDto?.startTime ||
-        !room.currentReservationDto?.endTime
-      )
+      if (!room.currentReservation || !room.currentReservation?.startTime)
         return "-";
+
+      const endTime = room.currentReservation.endTime || new Date();
       const dur = DateFns.intervalToDuration({
-        start: room.currentReservationDto.startTime,
-        end: room.currentReservationDto.endTime,
+        start: room.currentReservation.startTime,
+        end: endTime,
       });
       return DateFns.formatDuration(dur);
     },
   },
-  {
-    header: "Cost",
-    cell: ({ row }) => {
-      const room = row.original;
-      if (!room.currentReservationDto || !room.currentReservationDto.cost) {
-        return "-";
-      }
+  // {
+  //   header: "Cost",
+  //   cell: ({ row }) => {
+  //     const room = row.original;
+  //     if (!room.currentReservation || !room.currentReservation.cost) {
+  //       return "-";
+  //     }
 
-      return toEGP(room.currentReservationDto.cost);
-    },
-  },
+  //     return toEGP(room.currentReservation.cost);
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row, table }) => {

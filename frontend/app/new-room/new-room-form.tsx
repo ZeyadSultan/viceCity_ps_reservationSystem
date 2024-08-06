@@ -21,22 +21,16 @@ import { Input } from "@/components/ui/input";
 import SelectFormField from "@/components/forms/select-form-field";
 import TextFormField from "@/components/forms/text-form-field";
 
-import { toSentenceCase } from "@/lib/utils";
+import { ROOM_TYPES, toSentenceCase } from "@/lib/utils";
 
 import { createRoom } from "@/orval/api/api";
-import { RoomType } from "@/orval/api/model";
-
-/** Generated room types dynamically from the orval generated files */
-const ROOM_TYPES = Object.keys(RoomType) as unknown as readonly [
-  RoomType,
-  ...RoomType[]
-];
 
 const roomFormSchema = z.object({
   name: z.string().min(1).max(255),
   available: z.boolean().optional(),
   type: z.enum(ROOM_TYPES),
-  pricePerHour: z.number({ coerce: true }).nonnegative(),
+  priceSingle: z.number({ coerce: true }).nonnegative(),
+  priceMulti: z.number({ coerce: true }).nonnegative().optional(),
 });
 
 export type NewRoomFormSchema = z.infer<typeof roomFormSchema>;
@@ -59,7 +53,6 @@ function NewRoomForm({ dialogMode = false, closeDialog }: NewRoomFormProps) {
     resolver: zodResolver(roomFormSchema),
     defaultValues: {
       name: "",
-      pricePerHour: 10,
       // ...preFilledData,
     },
   });
@@ -128,10 +121,29 @@ function NewRoomForm({ dialogMode = false, closeDialog }: NewRoomFormProps) {
         {/*====================================================*/}
         <FormField
           control={form.control}
-          name="pricePerHour"
+          name="priceSingle"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price/Hour</FormLabel>
+              <FormLabel>{"Price/Hour - Single"}</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min={1}
+                  step={0.01}
+                  disabled={submitting}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="priceMulti"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{"Price/Hour - Multi (Optional)"}</FormLabel>
               <FormControl>
                 <Input
                   type="number"

@@ -17,37 +17,33 @@ import DateTimeFormField from "@/components/forms/date-time-form-field";
 import SelectFormField from "@/components/forms/select-form-field";
 import TextFormField from "@/components/forms/text-form-field";
 
-import {
-  createReservation,
-  getAllRoomsWithCurrReservation,
-} from "@/orval/api/api";
+import { reserve, getRoomsReservations } from "@/orval/api/api";
 
 const playstationOptionsSchema = z.object({
-  type: z.union([z.literal("ps4"), z.literal("ps5")]),
+  // type: z.union([z.literal("ps4"), z.literal("ps5")]),
   controllers: z.union([z.literal("single"), z.literal("multi")]),
 });
 
-const reservationFormSchema = z
-  .object({
-    startDateTime: z.date(),
-    endDateTime: z.date(),
-    roomId: z.string(),
-    customerPhoneNumber: z.string().optional(),
-    customerName: z.string().optional(),
-    playstationOptions: playstationOptionsSchema.optional(),
-  })
-  .refine(
-    (data) => {
-      if (!DateFns.isAfter(data.endDateTime, data.startDateTime)) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "End date must be after start date",
-      path: ["endDateTime"],
-    }
-  );
+const reservationFormSchema = z.object({
+  // startDateTime: z.date(),
+  // endDateTime: z.date(),
+  roomId: z.string(),
+  customerPhoneNumber: z.string().optional(),
+  customerName: z.string().optional(),
+  playstationOptions: playstationOptionsSchema.optional(),
+});
+// .refine(
+//   (data) => {
+//     if (!DateFns.isAfter(data.endDateTime, data.startDateTime)) {
+//       return false;
+//     }
+//     return true;
+//   },
+//   {
+//     message: "End date must be after start date",
+//     path: ["endDateTime"],
+//   }
+// );
 export type NewReservationFormSchema = z.infer<typeof reservationFormSchema>;
 
 /**
@@ -85,15 +81,15 @@ function NewReservationForm({
   } = useQuery({
     queryKey: ["availableRooms"],
     queryFn: async () => {
-      const rooms = await getAllRoomsWithCurrReservation();
-      return rooms.filter((room) => !room.currentReservationDto);
+      const rooms = await getRoomsReservations();
+      return rooms.filter((room) => !room.currentReservation);
     },
   });
   const form = useForm<NewReservationFormSchema>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
-      startDateTime: new Date(),
-      endDateTime: new Date(),
+      // startDateTime: new Date(),
+      // endDateTime: new Date(),
       customerName: "",
       customerPhoneNumber: "",
       ...preFilledData,
@@ -111,15 +107,15 @@ function NewReservationForm({
   }, [chosenRoomId, isFetched]);
   useEffect(() => form.resetField("playstationOptions"), [isPlaystaion]);
 
-  const duration = useMemo(() => {
-    const startDateTime = form.watch("startDateTime");
-    const endDateTime = form.watch("endDateTime");
-    const dur = DateFns.intervalToDuration({
-      start: startDateTime,
-      end: endDateTime,
-    });
-    return DateFns.formatDuration(dur);
-  }, [form.watch("startDateTime"), form.watch("endDateTime")]);
+  // const duration = useMemo(() => {
+  //   const startDateTime = form.watch("startDateTime");
+  //   const endDateTime = form.watch("endDateTime");
+  //   const dur = DateFns.intervalToDuration({
+  //     start: startDateTime,
+  //     end: endDateTime,
+  //   });
+  //   return DateFns.formatDuration(dur);
+  // }, [form.watch("startDateTime"), form.watch("endDateTime")]);
 
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
@@ -133,12 +129,10 @@ function NewReservationForm({
     // setFormAlertData({ message: "", type: "error" });
 
     try {
-      const _ = await createReservation({
+      const _ = await reserve(parseInt(values.roomId), {
         reserverName: values.customerName,
         phoneNumber: values.customerPhoneNumber,
-        roomId: parseInt(values.roomId),
-        startTime: values.startDateTime.toISOString(),
-        endTime: values.endDateTime.toISOString(),
+        multi: values.playstationOptions?.controllers === "multi",
       });
 
       await refetchRooms();
@@ -163,7 +157,7 @@ function NewReservationForm({
 
   const playstationFormFields = (
     <>
-      <SelectFormField
+      {/* <SelectFormField
         key={+reRenderSelect + "type"}
         control={form.control}
         name="playstationOptions.type"
@@ -174,7 +168,7 @@ function NewReservationForm({
       >
         <SelectItem value="ps4">PS4</SelectItem>
         <SelectItem value="ps5">PS5</SelectItem>
-      </SelectFormField>
+      </SelectFormField> */}
       <SelectFormField
         key={+reRenderSelect + "controllers"}
         control={form.control}
@@ -190,30 +184,32 @@ function NewReservationForm({
     </>
   );
 
+  // const datesFormInputs = ( <DateTimeFormField
+  //   control={form.control}
+  //   name="startDateTime"
+  //   label="Start Date & Time"
+  //   disabled={submitting}
+  // />
+  // {/*====================================================*/}
+  // {/* <FormAlert {...formAlertData} /> */}
+  // <DateTimeFormField
+  //   control={form.control}
+  //   name="endDateTime"
+  //   label="End Date & Time"
+  //   disabled={submitting}
+  // />
+  // {/*====================================================*/}
+  // <FormItem>
+  //   <FormLabel>Duration</FormLabel>
+  //   <Input disabled type="text" value={duration} />
+  // </FormItem>))
+
   return (
     <div className="container mx-auto py-10 max-w-lg">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           {/*====================================================*/}
-          <DateTimeFormField
-            control={form.control}
-            name="startDateTime"
-            label="Start Date & Time"
-            disabled={submitting}
-          />
-          {/*====================================================*/}
-          {/* <FormAlert {...formAlertData} /> */}
-          <DateTimeFormField
-            control={form.control}
-            name="endDateTime"
-            label="End Date & Time"
-            disabled={submitting}
-          />
-          {/*====================================================*/}
-          <FormItem>
-            <FormLabel>Duration</FormLabel>
-            <Input disabled type="text" value={duration} />
-          </FormItem>
+          {/* {datesFormInputs} */}
           {/*====================================================*/}
           <SelectFormField
             key={+reRenderSelect + "roomId"}

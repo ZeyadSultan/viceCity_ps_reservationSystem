@@ -11,12 +11,12 @@ import DialogFormWrapper from "@/components/forms/dialog-form-wrapper";
 
 import NewRoomForm from "@/app/new-room/new-room-form";
 
-import { getAllRoomsWithCurrReservation } from "@/orval/api/api";
+import { getRoomsReservations } from "@/orval/api/api";
 
 export default function RoomsPage() {
   const { data: rooms, refetch: refetchRooms } = useQuery({
     queryKey: ["getAllRoomsWithCurrReservation"],
-    queryFn: getAllRoomsWithCurrReservation,
+    queryFn: getRoomsReservations,
   });
   return (
     <>

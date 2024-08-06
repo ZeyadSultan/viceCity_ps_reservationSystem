@@ -1,9 +1,20 @@
+import {
+  RoomsReservationsDTO,
+  RoomsReservationsDTOType,
+} from "@/orval/api/model";
+
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+import { RoomType } from "@/orval/api/model";
+/** Generated room types dynamically from the orval generated files */
+export const ROOM_TYPES = Object.keys(RoomType) as unknown as readonly [
+  RoomType,
+  ...RoomType[]
+];
 
 export function toEGP(amount: string | number) {
   if (typeof amount === "string") {
@@ -34,4 +45,22 @@ export const toSentenceCase = (str: string) => {
       )
       ?.join(" ");
   return s && s.slice(0, 1).toUpperCase() + s.slice(1);
+};
+
+export const isPlaystaion = (
+  roomType: RoomsReservationsDTOType | undefined
+) => {
+  return (
+    roomType === "PLAYSTATION_PARTITION" || roomType === "PLAYSTATION_ROOM"
+  );
+};
+
+export const getRoomPrice = (room: RoomsReservationsDTO) => {
+  if (!isPlaystaion(room?.type)) {
+    return room.priceSingle;
+  }
+  if (room.priceMulti || room.priceMulti === 0) {
+    return room.priceSingle;
+  }
+  return room.priceMulti;
 };
