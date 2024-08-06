@@ -2,6 +2,7 @@ package org.example.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.example.dto.ReservationDTO;
 import org.example.dto.ReserveDTO;
 import org.example.model.Reservation;
 import org.example.model.Room;
@@ -20,6 +21,11 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+
+    @GetMapping
+    public ResponseEntity<List<ReservationDTO>> getReservations() {
+        return ResponseEntity.ok(reservationService.getAllReservations());
+    }
 
     @PostMapping("/{roomId}")
     public ResponseEntity<Reservation> reserve(@PathVariable("roomId") long roomId,

@@ -2,6 +2,7 @@ package org.example.service;
 
 import jakarta.transaction.Transactional;
 
+import org.example.dto.ReservationDTO;
 import org.example.dto.ReserveDTO;
 import org.example.exception.ApiError;
 import org.example.model.Reservation;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -25,6 +27,23 @@ public class ReservationService {
         this.roomService = roomService;
     }
 
+    public List<ReservationDTO> getAllReservations() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        List<ReservationDTO> reservationDTOS = reservations.stream().map(reservation ->  {
+            ReservationDTO reservationDTO = new ReservationDTO();
+            reservationDTO.setId(reservation.getId());
+            reservationDTO.setMulti(reservation.isMulti());
+            reservationDTO.setReserverName(reservation.getReserverName());
+            reservationDTO.setCost(reservation.getCost());
+            reservationDTO.setRoomId(reservation.getRoom().getId());
+            reservationDTO.setStartTime(reservation.getStartTime());
+            reservationDTO.setEndTime(reservation.getEndTime());
+            reservationDTO.setPhoneNumber(reservation.getPhoneNumber());
+            return reservationDTO;
+        }
+        ).collect(Collectors.toList());
+        return reservationDTOS;
+    }
 //    public ReservationDTO getLatestReservationByRoomId(Long roomId) {
 //        return ReservationDTO.from(reservationRepository.findFirstByRoomIdOrderByStartTimeDesc(roomId));
 //    }
