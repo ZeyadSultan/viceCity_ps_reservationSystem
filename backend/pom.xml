@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org</groupId>
-    <artifactId>example</artifactId>
+    <artifactId>vice-city-ps</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>spring-boot-app</name>
-    <description>Spring Boot Application</description>
+    <name>vice-city-ps</name>
+    <description>Vice City PlayStaion Admin Panel</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

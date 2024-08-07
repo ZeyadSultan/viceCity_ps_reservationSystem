@@ -4,7 +4,10 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:8080/api/:path*",
+        // use environment variable to get the host
+        destination: `http://${
+          process.env.NODE_ENV === "production" ? "backend" : "localhost"
+        }:8080/api/:path*`,
       },
     ];
   },
