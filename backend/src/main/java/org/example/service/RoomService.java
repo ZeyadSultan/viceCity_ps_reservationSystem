@@ -6,7 +6,6 @@ import org.example.exception.ApiError;
 import org.example.model.Reservation;
 import org.example.model.Room;
 import org.example.repository.RoomRepository;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;

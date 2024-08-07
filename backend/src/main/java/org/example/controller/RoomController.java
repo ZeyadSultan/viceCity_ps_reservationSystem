@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 //import org.example.dto.RoomDTO;
 import org.example.dto.RoomsReservationsDTO;
 import org.example.model.Room;
-import org.example.service.ReservationService;
 import org.example.service.RoomService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,5 @@
 package org.example.repository;
 
-import jdk.dynalink.linker.LinkerServices;
 import org.example.model.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 

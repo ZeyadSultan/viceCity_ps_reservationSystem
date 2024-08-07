@@ -5,14 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.ReservationDTO;
 import org.example.dto.ReserveDTO;
 import org.example.model.Reservation;
-import org.example.model.Room;
 import org.example.service.ReservationService;
-import org.example.service.RoomService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
