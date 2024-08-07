@@ -11,6 +11,11 @@
 ## Deployment
 
 1. Make sure that you followed steps to switch between development and production mentioned above.
+1. Navigate to the backend directory and run the following command to build the backend:
+   ```bash
+   ./mvnw clean
+   ./mvnw package
+   ```
 1. Make sure [docker desktop](https://docs.docker.com/desktop/install/windows-install/) is installed on your machine and runs correctly.
 1. Open a terminal and navigate to the root of the project.
 1. Run the following command to build the docker image:
