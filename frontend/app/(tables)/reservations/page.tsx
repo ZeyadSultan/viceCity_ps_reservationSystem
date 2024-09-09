@@ -1,9 +1,9 @@
 "use client";
 
-import { DataTableCard } from "@/components/data-table-card";
 import { useQuery } from "@tanstack/react-query";
 import { columns } from "./columns";
 import { getReservations } from "@/orval/api/api";
+import ReservationsTableCard from "./reservations-table-card";
 
 function ReservationsPage() {
   const { data: reservations, refetch: refetchReservations } = useQuery({
@@ -11,7 +11,7 @@ function ReservationsPage() {
     queryFn: getReservations,
   });
   return (
-    <DataTableCard
+    <ReservationsTableCard
       title={"Reservations"}
       description={undefined}
       columns={columns}
