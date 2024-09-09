@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * PS OPTIONS NOT SHOWING BEHAVIOR
+ * 1. book a rooms from "/rooms" page
+ * 2. checkout from "/rooms" page
+ * 3. click on the "Book" button for the same room
+ * 4. the playstation options will not show
+ */
+
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +26,7 @@ import SelectFormField from "@/components/forms/select-form-field";
 import TextFormField from "@/components/forms/text-form-field";
 
 import { reserve, getRoomsReservations } from "@/orval/api/api";
+import { useRouter } from "next/navigation";
 
 const playstationOptionsSchema = z.object({
   // type: z.union([z.literal("ps4"), z.literal("ps5")]),
@@ -85,6 +94,8 @@ function NewReservationForm({
       return rooms.filter((room) => !room.currentReservation);
     },
   });
+
+  const router = useRouter();
   const form = useForm<NewReservationFormSchema>({
     resolver: zodResolver(reservationFormSchema),
     defaultValues: {
@@ -135,14 +146,15 @@ function NewReservationForm({
         multi: values.playstationOptions?.controllers === "multi",
       });
 
-      await refetchRooms();
+      // await refetchRooms();
       form.reset();
-      setReRenderSelect(new Date());
+      // setReRenderSelect(new Date());
 
       toast({
         title: "Room Booked",
         description: `Room booked successfully`,
       });
+      router.push("/rooms");
     } catch (error: any) {
       console.log(error);
       toast({
