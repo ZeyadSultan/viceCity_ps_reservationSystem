@@ -2,8 +2,11 @@
 
 import {
   ColumnDef,
+  ColumnFiltersState,
+  FilterFn,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -26,6 +29,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 interface ReservationsTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -35,6 +39,11 @@ interface ReservationsTableProps<TData, TValue> {
   refetchData?: () => void;
 }
 
+const globalFilterFunction: FilterFn<any> = (row, columnId, filterValue) => {
+  const lowerCaseFilterValue = String(filterValue).toLowerCase();
+  const cellValue = row.getValue(columnId);
+  return String(cellValue).toLowerCase().includes(lowerCaseFilterValue);
+};
 export default function ReservationsTableCard<TData, TValue>({
   columns,
   data,
@@ -43,14 +52,26 @@ export default function ReservationsTableCard<TData, TValue>({
   refetchData,
 }: ReservationsTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+
+    globalFilterFn: globalFilterFunction,
+
     state: {
       sorting,
+      columnFilters,
+      globalFilter,
     },
     meta: {
       refetchData,
@@ -66,6 +87,16 @@ export default function ReservationsTableCard<TData, TValue>({
         </CardHeader>
       )}
       <CardContent>
+        <div className="flex items-center py-4">
+          <Input
+            placeholder="Filter By Room, Customer, Phone, or Start Time"
+            value={table.getState().globalFilter || ""}
+            onChange={(e) => {
+              table.setGlobalFilter(e.target.value);
+            }}
+            className="max-w-sm"
+          />
+        </div>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

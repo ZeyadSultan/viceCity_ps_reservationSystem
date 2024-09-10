@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +39,7 @@ export const columns: ColumnDef<ReservationDTO>[] = [
   {
     accessorKey: "id",
     id: "id",
+    enableGlobalFilter: false,
     header: ({ column }) => {
       return (
         <SortingButton
@@ -52,6 +53,7 @@ export const columns: ColumnDef<ReservationDTO>[] = [
     },
   },
   {
+    id: "roomName",
     accessorFn: (row) => row.room?.name || "-",
     header: ({ column }) => {
       return (
@@ -64,7 +66,6 @@ export const columns: ColumnDef<ReservationDTO>[] = [
         </SortingButton>
       );
     },
-    id: "roomName",
   },
   {
     id: "customerName",
@@ -120,6 +121,7 @@ export const columns: ColumnDef<ReservationDTO>[] = [
   },
   {
     header: "Duration",
+    enableGlobalFilter: false,
     accessorFn: (row) => {
       const reservation = row;
       if (!reservation || !reservation?.startTime || !reservation?.endTime)
@@ -133,6 +135,7 @@ export const columns: ColumnDef<ReservationDTO>[] = [
   },
   {
     header: "Cost",
+    enableGlobalFilter: false,
     accessorFn: (row) => toEGP(row.cost || 0),
   },
   {
